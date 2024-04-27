@@ -1,8 +1,11 @@
+import { getAuth } from 'firebase/auth'
 import React from 'react'
+import { app } from '../firebase'
+
 
 const Home = () => {
   return (
-    <div>Home</div>
+    <div>{ (getAuth(app).currentUser.uid)}</div>
   )
 }
 

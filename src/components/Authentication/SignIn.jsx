@@ -6,6 +6,7 @@ import { Link, useNavigate } from 'react-router-dom';
 const SignIn = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState(false);
   const navigate = useNavigate();
 
   const signIn = (e) => {
@@ -71,6 +72,7 @@ const SignIn = () => {
                 Don't have an account? Sign up
               </Link>
             </div>
+            {error && <span className='mt-4 bg-red-500'>Wrong email or password!</span>}
           </div>
         </div>
       </div>
