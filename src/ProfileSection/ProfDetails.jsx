@@ -1,10 +1,13 @@
-// StoreImageTextFirebase.jsx
-
 import React, { useEffect, useState } from "react";
 import { v4 } from "uuid";
-import { db, imgDB,auth } from "../firebase";
+import { db, imgDB, app } from "../firebase";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+<<<<<<< HEAD
 import { addDoc, collection,doc} from "firebase/firestore";
+=======
+import { doc, setDoc } from "firebase/firestore";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+>>>>>>> 2a9299a3858b28777d7a0f97d94ef67c5b6a2782
 
 
 function ProfDetails() {
@@ -12,9 +15,9 @@ function ProfDetails() {
   const [age, setAge] = useState('');
   const [gender, setGender] = useState('');
   const [preferences, setPreferences] = useState('');
-  // const [data, setData] = useState([])
   const [img, setImgUrl] = useState('')
-  // Add state variables for other fields
+  const [uid, setUid] = useState(null);
+
 
   const handleUpload = (e) => {
     const imgRef = ref(imgDB, `images/${v4()}`);
@@ -26,58 +29,33 @@ function ProfDetails() {
       });
     });
   };
-// const handleUpload = (e) =>{
-//     console.log(e.target.files[0])
-//     const imgs = ref(imgDB,`Imgs/${v4()}`)
-//     uploadBytes(imgs,e.target.files[0]).then(data=>{
-//         console.log(data,"imgs")
-//         getDownloadURL(data.ref).then(val=>{
-//             setImg(val)
-//         })
-//     })
+
 
   const handleClick = async () => {
-    const userData = {
-      name,
-      age,
-      gender,
-      preferences,
-      img,
-      // Add other fields as needed
-    };
+    const userData = { name, age, gender, preferences, img, };
 
-  //   try {
-  //     const userRef = collection(db, 'users');
-  //     await addDoc(userRef, userData); 
-  //     // await addDoc(valRef,{txtVal:txt,imgUrl:img})
-  //     alert("User data added successfully");
-  //   } catch (error) {
-  //     console.error("Error adding document: ", error);
-  //   }
-  // };
-  try {
-    const userRef = doc(db, 'users', auth.currentUser.uid); // Use auth.currentUser.uid to get the current user's ID
-    await addDoc(collection(userRef, 'profile'), userData); // Add user data to a 'profile' subcollection
-    alert("User data added successfully");
-  } catch (error) {
-    console.error("Error adding document: ", error);
-    alert("failed to add user data "+ error.message)
-  }
-};
+    try {
+      await setDoc(doc(db, 'users', uid), userData);
+      alert("User data added successfully");
+    } catch (error) {
+      console.error("Error adding document: ", error);
+      alert("Failed to add user data: " + error.message);
+    }
+  };
 
-  // const getData = async () => {
-  //   const userRef = collection(db, 'users', auth.currentUser.uid);
-  //   const querySnapshot = await getDocs(userRef);
-  //   const userData = [];
-  //   querySnapshot.forEach((doc) => {
-  //     userData.push(doc.data());
-  //   });
-  //   setData(userData);
-  // };
 
-  // useEffect(() => {
-  //   getData();
-  // }, []);
+  useEffect(() => {
+    const auth = getAuth(app);
+    const unsubscribe = onAuthStateChanged(auth, user => {
+      if (user) {
+        setUid(user.uid);
+      } else {
+        setUid(null);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   return (
     <div>
